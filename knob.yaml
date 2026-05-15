@@ -1,0 +1,122 @@
+esphome:
+  name: knob-display
+  friendly_name: Knob Display
+  on_boot:
+    priority: -100
+    then:
+      - output.set_level:
+          id: motor_output
+          level: 1.0
+
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: arduino
+
+logger:
+  hardware_uart: USB_SERIAL_JTAG
+  baud_rate: 0
+api:
+ota:
+  platform: esphome
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  ap:
+    ssid: "Knob-Display-Fallback"
+    password: "fallback123"
+
+captive_portal:
+
+font:
+  - file: "gfonts://Roboto"
+    id: font_large
+    size: 70
+  - file: "gfonts://Roboto"
+    id: font_small
+    size: 22
+
+color:
+  - id: col_blue
+    hex: "0096FF"
+  - id: col_gray
+    hex: "444444"
+  - id: col_white
+    hex: "FFFFFF"
+  - id: col_black
+    hex: "000000"
+
+spi:
+  clk_pin: 1
+  mosi_pin: 0
+
+display:
+  - platform: mipi_spi
+    model: GC9A01A
+    id: round_display
+    cs_pin: 10
+    dc_pin: 4
+    reset_pin: 2
+    invert_colors: true
+    update_interval: 500ms
+    lambda: |-
+      int pct = (int) id(knob_encoder).state;
+      it.fill(Color(0, 0, 0));
+      char buf[8];
+      sprintf(buf, "%d%%", pct);
+      it.print(120, 120, id(font_large), id(col_white), TextAlign::CENTER, buf);
+
+output:
+  - platform: ledc
+    id: backlight_output
+    inverted: true
+    pin: 8
+    frequency: 5000Hz
+  - platform: ledc
+    id: motor_output
+    pin: 21
+    frequency: 25000Hz
+
+light:
+  - platform: monochromatic
+    name: "Backlight"
+    output: backlight_output
+    restore_mode: RESTORE_DEFAULT_ON
+
+sensor:
+  - platform: rotary_encoder
+    id: knob_encoder
+    name: "Knob"
+    pin_a:
+      number: 6
+      mode:
+        input: true
+        pullup: true
+    pin_b:
+      number: 7
+      mode:
+        input: true
+        pullup: true
+    resolution: 2
+    min_value: 0
+    max_value: 100
+    on_value:
+      then:
+        - logger.log:
+            format: "Knob: %d"
+            args: ['(int)x']
+        - output.set_level:
+            id: motor_output
+            level: !lambda "return x / 100.0;"
+        - component.update: round_display
+
+binary_sensor:
+  - platform: gpio
+    name: "Knob Button"
+    pin:
+      number: 9
+      inverted: true
+    filters:
+      - delayed_on: 50ms
+      - delayed_off: 50ms
