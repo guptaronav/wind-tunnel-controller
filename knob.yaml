@@ -1,12 +1,6 @@
 esphome:
   name: knob-display
   friendly_name: Knob Display
-  on_boot:
-    priority: -100
-    then:
-      - output.set_level:
-          id: motor_output
-          level: 1.0
 
 esp32:
   board: esp32-c3-devkitm-1
@@ -101,6 +95,8 @@ sensor:
     resolution: 2
     min_value: 0
     max_value: 100
+    restore_mode: RESTORE_DEFAULT_ZERO
+    publish_initial_value: true
     on_value:
       then:
         - logger.log:
