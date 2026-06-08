@@ -1,24 +1,33 @@
 # Wind Tunnel Controller
 
-A compact, standalone wind tunnel fan controller built with an ESP32-C3 round display and rotary knob. Turn the knob to set fan speed from 0–100% — the display updates in real time and the fan responds instantly via PWM.
+A standalone fan speed controller built with an ESP32-C3 round display module. Rotate the knob to set fan speed — the circular display shows the current percentage in real time, and the fan responds instantly over PWM.
+
+Built with [ESPHome](https://esphome.io) and designed to run headlessly off a USB adapter with no computer required.
+
+---
+
+## Demo
+
+> Rotate knob → display updates → fan speed changes
 
 ---
 
 ## Hardware
 
-| Component | Details |
+| Component | Part |
 |---|---|
-| Microcontroller | VIEWE UEDX24240013-MD50E (ESP32-C3) |
-| Display | 1.28" GC9A01A 240×240 round LCD |
-| Input | Rotary encoder with push button |
+| Controller | VIEWE UEDX24240013-MD50E (ESP32-C3) |
+| Display | 1.28" GC9A01A 240×240 round LCD (built in) |
+| Input | Rotary encoder with push button (built in) |
 | Fan | Noctua NF-R8 redux-1800 PWM (4-pin) |
-| Power | USB 5V (controller) + 12V supply (fan) |
+| Power — controller | USB 5V wall adapter |
+| Power — fan | 12V DC supply |
 
 ---
 
 ## Wiring
 
-### Display & Encoder (built into VIEWE board)
+### VIEWE Board — Internal Pin Mapping
 | Signal | GPIO |
 |---|---|
 | SPI CLK | 1 |
@@ -26,75 +35,85 @@ A compact, standalone wind tunnel fan controller built with an ESP32-C3 round di
 | Display CS | 10 |
 | Display DC | 4 |
 | Display RST | 2 |
-| Backlight | 8 |
+| Backlight PWM | 8 |
 | Encoder A | 6 |
 | Encoder B | 7 |
 | Encoder Button | 9 |
 
-### Fan PWM Control
+### Fan Connection
 | Fan Wire | Colour | Connect To |
 |---|---|---|
-| Pin 1 | Black | GND (shared with ESP32) |
-| Pin 2 | Yellow | 12V supply (+) |
-| Pin 3 | Green | Not connected (tach) |
-| Pin 4 | Blue | GPIO 21 / TX1 (PWM signal) |
+| Pin 1 | Black | GND (shared with ESP32 and 12V supply −) |
+| Pin 2 | Yellow | 12V supply + |
+| Pin 3 | Green | Not connected (tachometer) |
+| Pin 4 | Blue | GPIO 21 / TX1 (25 kHz PWM signal) |
 
-> **Important:** The 12V supply negative must share a common GND with the ESP32 dev board.
+> **Important:** The 12V supply negative and the ESP32 GND must share a common ground. Without this the fan will not respond to PWM.
 
 ---
 
-## Software
+## Software Setup
 
-Built with [ESPHome](https://esphome.io). The fan is driven at 25 kHz PWM — the standard for 4-pin PC fans. The rotary encoder maps 0–100 to 0–100% PWM duty cycle, updating the display and fan simultaneously on every tick.
+### Requirements
+- Python 3.8+
+- ESPHome
 
-### Setup
+```bash
+pip3 install esphome
+```
 
-1. Install ESPHome:
+### Configuration
+
+1. Clone this repo:
    ```bash
-   pip3 install esphome
+   git clone https://github.com/guptaronav/wind-tunnel-controller.git
+   cd wind-tunnel-controller
    ```
 
-2. Create a `secrets.yaml` in the project folder:
+2. Create `secrets.yaml` (not committed — keep this private):
    ```yaml
    wifi_ssid: "YOUR_SSID"
    wifi_password: "YOUR_PASSWORD"
    ```
 
-3. Compile and flash via USB:
+3. Compile:
    ```bash
-   esphome run knob.yaml
+   esphome compile wind-tunnel.yaml
    ```
 
-4. For subsequent flashes, hold the rotary knob while plugging in USB to enter bootloader mode, then run:
+4. Flash — hold the rotary knob while plugging in USB to enter bootloader mode, then:
    ```bash
    esptool --before default-reset --after hard-reset --baud 460800 \
      --port /dev/cu.usbmodem<PORT> --chip esp32c3 write-flash \
      -z --flash-size detect \
-     0x10000 .esphome/build/knob-display/.pioenvs/knob-display/firmware.bin \
-     0x0     .esphome/build/knob-display/.pioenvs/knob-display/bootloader.bin \
-     0x8000  .esphome/build/knob-display/.pioenvs/knob-display/partitions.bin \
+     0x10000 .esphome/build/wind-tunnel/.pioenvs/wind-tunnel/firmware.bin \
+     0x0     .esphome/build/wind-tunnel/.pioenvs/wind-tunnel/bootloader.bin \
+     0x8000  .esphome/build/wind-tunnel/.pioenvs/wind-tunnel/partitions.bin \
      0x9000  ~/.platformio/packages/framework-arduinoespressif32/tools/partitions/boot_app0.bin
    ```
+
+5. After first flash, OTA updates work wirelessly — just run `esphome run wind-tunnel.yaml`.
 
 ---
 
 ## How It Works
 
 ```
-Rotary Knob → ESPHome encoder sensor (0–100)
-                    │
-                    ├──► LEDC PWM output (GPIO 21, 25 kHz) ──► Noctua fan blue wire
-                    │
-                    └──► Display lambda redraws % value on GC9A01A screen
+Rotary Knob (0–100)
+       │
+       ├──► LEDC PWM output (GPIO 21, 25 kHz) ──► Noctua fan blue wire
+       │
+       └──► Display redraws percentage (Roboto 70pt, GC9A01A via mipi_spi)
 ```
 
-The display driver uses the `mipi_spi` platform with a custom C++ lambda that fills the screen and renders the percentage using a Roboto font at 70pt. The fan PWM output follows the 4-pin fan specification where duty cycle directly maps to fan speed.
+The rotary encoder maps 0–100 to a 0–100% PWM duty cycle at 25 kHz — the Intel specification for 4-pin PWM fans. The display renders the percentage using a C++ lambda on the GC9A01A driver. Both update on every encoder tick with no polling loop.
 
 ---
 
 ## Notes
 
-- `secrets.yaml` is excluded from this repo — never commit WiFi credentials
-- The `mipi_spi` platform is required (the older `ili9xxx` platform has issues with newer ESPHome versions)
-- USB logging uses `USB_SERIAL_JTAG` hardware UART — no UART0 conflict
-- Fan runs at reduced max RPM on 9V; use 12V for full 1800 RPM
+- `secrets.yaml` is gitignored — never commit WiFi credentials
+- Use `mipi_spi` platform (not the deprecated `ili9xxx`) for reliable display rendering
+- Logger uses `USB_SERIAL_JTAG` to keep GPIO 20/21 free for UART use
+- Fan runs below rated RPM on 9V; use 12V for full 1800 RPM
+- After flashing, the ESP32 can be powered from any USB adapter — no computer needed
