@@ -1,6 +1,17 @@
 esphome:
   name: wind-tunnel
   friendly_name: Wind Tunnel Controller
+  on_boot:
+    - priority: -100
+      then:
+        - delay: 3s
+        - lambda: 'id(startup_complete) = true;'
+
+globals:
+  - id: startup_complete
+    type: bool
+    restore_value: false
+    initial_value: 'false'
 
 esp32:
   board: esp32-c3-devkitm-1
@@ -121,7 +132,11 @@ binary_sensor:
       - delayed_off: 50ms
     on_press:
       then:
-        - sensor.rotary_encoder.set_value:
-            id: knob_encoder
-            value: 0
-        - logger.log: "Knob Button: reset to 0%"
+        - if:
+            condition:
+              lambda: 'return id(startup_complete);'
+            then:
+              - sensor.rotary_encoder.set_value:
+                  id: knob_encoder
+                  value: 0
+              - logger.log: "Knob Button: reset to 0%"
