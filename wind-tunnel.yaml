@@ -112,6 +112,9 @@ binary_sensor:
     name: "Knob Button"
     pin:
       number: 9
+      mode:
+        input: true
+        pullup: true
       inverted: true
     filters:
       - delayed_on: 50ms
