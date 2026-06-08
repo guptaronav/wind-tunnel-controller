@@ -116,3 +116,9 @@ binary_sensor:
     filters:
       - delayed_on: 50ms
       - delayed_off: 50ms
+    on_press:
+      then:
+        - sensor.rotary_encoder.set_value:
+            id: knob_encoder
+            value: 0
+        - logger.log: "Knob Button: reset to 0%"
