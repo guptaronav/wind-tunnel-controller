@@ -1,5 +1,7 @@
 # Wind Tunnel
 
+![Assembled wind tunnel](assembled-tunnel.jpg)
+
 A desktop open-circuit wind tunnel with fan-driven airflow, mist-based flow visualization, and a knob controller for fan speed. Everything needed to build one is in this repo: the 3D printable parts, the electronics wiring, and the ESP32-C3 firmware.
 
 Rotate the knob to set fan speed — the round display shows the simulated mph of the test object (0–250 mph) in real time and the fan responds instantly over PWM. The mist maker injects visible fog into the airflow so you can see flow behavior through the clear test section.
@@ -12,9 +14,11 @@ Rotate the knob to set fan speed — the round display shows the simulated mph o
 hardware/
   3d-printed-parts/   STL files for every printed part
   contraction-cone-profile.png   reference curve used to design the contraction cone
+  venturi-effect.png  Venturi effect reference diagram
 firmware/
   wind-tunnel.yaml     ESPHome config for the fan controller
   secrets.yaml         WiFi credentials (gitignored, create your own)
+assembled-tunnel.jpg  photo of the built tunnel
 ```
 
 ---
@@ -44,6 +48,8 @@ Honeycomb + screen inlet → Contraction cone → Test chamber → Diffuser → 
 **Meshes and eddies.** An eddy is a swirling pocket of air that breaks away from the main flow, usually where flow separates around an edge or surface. Eddies make the airflow turbulent and uneven, which ruins flow visualization and skews test results. The honeycomb mesh forces air through a bundle of parallel cells, killing swirl and any sideways motion. The fine screen behind it breaks up the smaller eddies that survive and evens out the velocity across the whole cross-section, since faster-moving air meets more resistance passing through the mesh than slower air does.
 
 **Venturi effect.** Air is effectively incompressible at these speeds, so the same volume has to pass through every cross-section per second. Narrow the duct and the air has to speed up to keep up, the same principle behind a Venturi tube. That's what the contraction cone does: it shrinks the cross-section ahead of the test chamber, accelerating and smoothing the flow before it reaches the model.
+
+![Venturi effect: constricting a duct raises speed and drops pressure](hardware/venturi-effect.png)
 
 **Why a 5th-degree polynomial.** The contraction cone's wall profile (see [`contraction-cone-profile.png`](hardware/contraction-cone-profile.png)) is a quintic curve rather than a plain cone or a cubic, because a 5th-degree polynomial is the lowest degree that can satisfy six conditions at once: matching radius, slope, and curvature at both the inlet and the outlet. Matching slope keeps the wall tangent to the straight duct on each end with no kink. Matching curvature avoids a sudden change in the pressure gradient. Either discontinuity would trip the boundary layer into separating, adding turbulence right before the air reaches the test section.
 
