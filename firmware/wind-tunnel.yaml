@@ -76,7 +76,7 @@ display:
     update_interval: 500ms
     lambda: |-
       float pct = id(knob_encoder).state;
-      float mph = pct / 100.0f * ${max_speed_mph}f;
+      float mph = pct / 100.0f * static_cast<float>(${max_speed_mph});
       it.fill(Color(0, 0, 0));
       char buf[8];
       sprintf(buf, "%.1f", mph);
