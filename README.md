@@ -1,33 +1,84 @@
-# Wind Tunnel Controller
+# Wind Tunnel
 
-A standalone fan speed controller built with an ESP32-C3 round display module. Rotate the knob to set fan speed — the circular display shows the current percentage in real time, and the fan responds instantly over PWM.
+A desktop open-circuit wind tunnel with fan-driven airflow, mist-based flow visualization, and a knob controller for fan speed. Everything needed to build one is in this repo: the 3D printable parts, the electronics wiring, and the ESP32-C3 firmware.
 
-Built with [ESPHome](https://esphome.io) and designed to run headlessly off a USB adapter with no computer required.
-
----
-
-## Demo
-
-> Rotate knob → display updates → fan speed changes
+Rotate the knob to set fan speed — the round display shows the current percentage in real time and the fan responds instantly over PWM. The mist maker injects visible fog into the airflow so you can see flow behavior through the clear test section.
 
 ---
 
-## Hardware
+## Repo layout
 
-| Component | Part |
-|---|---|
-| Controller | VIEWE UEDX24240013-MD50E (ESP32-C3) |
-| Display | 1.28" GC9A01A 240×240 round LCD (built in) |
-| Input | Rotary encoder with push button (built in) |
-| Fan | Noctua NF-R8 redux-1800 PWM (4-pin) |
-| Power — controller | USB 5V wall adapter |
-| Power — fan | 12V DC supply |
+```
+hardware/
+  3d-printed-parts/   STL files for every printed part
+  contraction-cone-profile.png   reference curve used to design the contraction cone
+firmware/
+  wind-tunnel.yaml     ESPHome config for the fan controller
+  secrets.yaml         WiFi credentials (gitignored, create your own)
+```
+
+---
+
+## Overview
+
+Air is pulled through the tunnel by the fan at the exit end:
+
+```
+Honeycomb + screen inlet → Contraction cone → Test chamber → Diffuser → Fan
+                                                  ↑
+                                          Mist injected here
+```
+
+- **Honeycomb inlet / screen inlet** straighten and smooth incoming air before it accelerates through the contraction cone.
+- **Contraction cone** narrows the flow into the test chamber, increasing velocity and evening out the profile.
+- **Test chamber** is where models sit. A **top door** gives access without disassembling the tunnel. Mist is injected here (or just upstream of it) via the **manifold**, fed by an ultrasonic mist maker housed in the **mister enclosure**.
+- **Diffuser** widens back out after the test chamber, recovering pressure before the fan.
+- The **fan**, mounted at the exit, pulls air through the whole stack and is the only powered/controlled component.
+
+---
+
+## Bill of materials
+
+### 3D printed (PLA, see [`hardware/3d-printed-parts/`](hardware/3d-printed-parts))
+
+| Part | Qty | Notes |
+|---|---|---|
+| Base 1 / 2 / 3 | 1 each | Structural base, split into 3 prints |
+| Contraction Cone 1 / 2 | 1 each | Two-piece cone, see profile reference image |
+| Test Chamber 1 / 2 | 1 each | Two-piece test section |
+| Diffuser 1 / 2 | 1 each | Two-piece diffuser |
+| Honeycomb Inlet | 1 | Flow straightener, intake side |
+| Honeycomb Outlet | 1 | Flow straightener, exit side |
+| Screen Inlet | 1 | Mesh screen mount, intake side |
+| Screen Outlet | 1 | Mesh screen mount, exit side |
+| Top Door | 1 | Test chamber access hatch |
+| Manifold | 1 | Distributes mist into the airflow |
+| Mister Enclosure Bottom | 1 | Houses the ultrasonic mist maker |
+| Mister Enclosure Lid | 1 | — |
+
+### Electronics
+
+| Part | Qty | Notes |
+|---|---|---|
+| VIEWE UEDX24240013-MD50E (ESP32-C3, round display + rotary encoder built in) | 1 | Fan controller |
+| Noctua NF-R8 redux-1800 PWM fan (4-pin, 80mm) | 1 | ~12V, well under 0.1A draw |
+| Ultrasonic mist maker module (fogger disc) | 1 | _fill in exact model/voltage used_ |
+| 12V DC power supply | 1 | _fill in rating — sized for fan + mist maker draw_ |
+| USB 5V adapter | 1 | Powers the controller board |
+| Hookup wire, 22–24 AWG | — | Fan and ground wiring |
+
+### Fasteners / misc
+
+| Part | Qty | Notes |
+|---|---|---|
+| M3 screws | — | _fill in length_ — diffuser fan mount, enclosure assembly |
+| Fine mesh screen | 2 | For Screen Inlet / Screen Outlet mounts |
 
 ---
 
 ## Wiring
 
-### VIEWE Board — Internal Pin Mapping
+### VIEWE board — internal pin mapping
 | Signal | GPIO |
 |---|---|
 | SPI CLK | 1 |
@@ -40,8 +91,8 @@ Built with [ESPHome](https://esphome.io) and designed to run headlessly off a US
 | Encoder B | 7 |
 | Encoder Button | 9 |
 
-### Fan Connection
-| Fan Wire | Colour | Connect To |
+### Fan connection
+| Fan wire | Colour | Connect to |
 |---|---|---|
 | Pin 1 | Black | GND (shared with ESP32 and 12V supply −) |
 | Pin 2 | Yellow | 12V supply + |
@@ -52,7 +103,7 @@ Built with [ESPHome](https://esphome.io) and designed to run headlessly off a US
 
 ---
 
-## Software Setup
+## Software setup
 
 ### Requirements
 - Python 3.8+
@@ -67,7 +118,7 @@ pip3 install esphome
 1. Clone this repo:
    ```bash
    git clone https://github.com/guptaronav/wind-tunnel-controller.git
-   cd wind-tunnel-controller
+   cd wind-tunnel-controller/firmware
    ```
 
 2. Create `secrets.yaml` (not committed — keep this private):
@@ -96,7 +147,7 @@ pip3 install esphome
 
 ---
 
-## How It Works
+## How the controller works
 
 ```
 Rotary Knob (0–100)
@@ -107,6 +158,16 @@ Rotary Knob (0–100)
 ```
 
 The rotary encoder maps 0–100 to a 0–100% PWM duty cycle at 25 kHz — the Intel specification for 4-pin PWM fans. The display renders the percentage using a C++ lambda on the GC9A01A driver. Both update on every encoder tick with no polling loop.
+
+---
+
+## V1 status
+
+V1 is built, assembled, and tested end to end — the mist maker produces visible flow and the knob controller drives the fan. Known improvements for V2:
+
+- Screw mounts for the diffuser fan (currently not secure enough)
+- Visual redesign of the test section
+- A proper enclosure for the controller and wiring, instead of sitting loose
 
 ---
 
