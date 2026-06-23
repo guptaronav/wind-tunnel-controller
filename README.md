@@ -6,6 +6,8 @@ A desktop open-circuit wind tunnel with fan-driven airflow, mist-based flow visu
 
 Rotate the knob to set fan speed — the round display shows the simulated mph of the test object (0–250 mph) in real time and the fan responds instantly over PWM. The mist maker injects visible fog into the airflow so you can see flow behavior through the clear test section.
 
+Explanation/Demonstration: https://drive.google.com/file/d/127fWZjQ2nb-Qn_b_NwKwKz4MTpZqQBtf/view?usp=sharing
+
 ---
 
 ## Repo layout
