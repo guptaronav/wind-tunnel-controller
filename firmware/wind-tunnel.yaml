@@ -1,3 +1,10 @@
+substitutions:
+  # Test-section top speed at 100% duty: Noctua NF-R8 redux-1800's rated
+  # free-air flow (27.97 m3/h) divided by the test chamber's 89mm bore,
+  # via the continuity equation. Real airspeed will be lower once duct
+  # and mesh losses are accounted for.
+  max_speed_mph: "2.8"
+
 esphome:
   name: wind-tunnel
   friendly_name: Wind Tunnel Controller
@@ -69,11 +76,13 @@ display:
     invert_colors: true
     update_interval: 500ms
     lambda: |-
-      int pct = (int) id(knob_encoder).state;
+      float pct = id(knob_encoder).state;
+      float mph = pct / 100.0f * ${max_speed_mph}f;
       it.fill(Color(0, 0, 0));
       char buf[8];
-      sprintf(buf, "%d%%", pct);
-      it.print(120, 120, id(font_large), id(col_white), TextAlign::CENTER, buf);
+      sprintf(buf, "%.1f", mph);
+      it.print(120, 95, id(font_large), id(col_white), TextAlign::CENTER, buf);
+      it.print(120, 160, id(font_small), id(col_white), TextAlign::CENTER, "mph");
 
 output:
   - platform: ledc

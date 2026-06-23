@@ -2,7 +2,7 @@
 
 A desktop open-circuit wind tunnel with fan-driven airflow, mist-based flow visualization, and a knob controller for fan speed. Everything needed to build one is in this repo: the 3D printable parts, the electronics wiring, and the ESP32-C3 firmware.
 
-Rotate the knob to set fan speed — the round display shows the current percentage in real time and the fan responds instantly over PWM. The mist maker injects visible fog into the airflow so you can see flow behavior through the clear test section.
+Rotate the knob to set fan speed — the round display shows the estimated test-section airspeed in mph in real time and the fan responds instantly over PWM. The mist maker injects visible fog into the airflow so you can see flow behavior through the clear test section.
 
 ---
 
@@ -166,10 +166,10 @@ Rotary Knob (0–100)
        │
        ├──► LEDC PWM output (GPIO 21, 25 kHz) ──► Noctua fan blue wire
        │
-       └──► Display redraws percentage (Roboto 70pt, GC9A01A via mipi_spi)
+       └──► Display redraws estimated mph (Roboto 70pt, GC9A01A via mipi_spi)
 ```
 
-The rotary encoder maps 0–100 to a 0–100% PWM duty cycle at 25 kHz — the Intel specification for 4-pin PWM fans. The display renders the percentage using a C++ lambda on the GC9A01A driver. Both update on every encoder tick with no polling loop.
+The rotary encoder maps 0–100 to a 0–100% PWM duty cycle at 25 kHz — the Intel specification for 4-pin PWM fans. The same 0–100 value is scaled to a top speed of 2.8 mph (the fan's rated free-air flow divided by the 89mm test chamber bore, via the continuity equation) and rendered as mph using a C++ lambda on the GC9A01A driver. Both update on every encoder tick with no polling loop.
 
 ---
 
