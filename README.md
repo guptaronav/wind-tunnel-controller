@@ -74,6 +74,12 @@ Honeycomb + screen inlet → Contraction cone → Test chamber → Diffuser → 
 | Mister Enclosure Bottom | 1 | Houses the ultrasonic mist maker |
 | Mister Enclosure Lid | 1 | — |
 
+### Materials
+
+| Part | Qty | Notes |
+|---|---|---|
+| Plexiglass (acrylic) sheet | — | Test chamber side panels — transparent and airtight |
+
 ### Electronics
 
 | Part | Qty | Notes |
