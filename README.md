@@ -37,6 +37,18 @@ Honeycomb + screen inlet → Contraction cone → Test chamber → Diffuser → 
 
 ---
 
+## Wind tunnel basics
+
+**What it's for.** A wind tunnel moves air past a stationary object instead of moving the object through still air. That makes it possible to study drag, lift, and flow separation on a scale model without building anything full size.
+
+**Meshes and eddies.** An eddy is a swirling pocket of air that breaks away from the main flow, usually where flow separates around an edge or surface. Eddies make the airflow turbulent and uneven, which ruins flow visualization and skews test results. The honeycomb mesh forces air through a bundle of parallel cells, killing swirl and any sideways motion. The fine screen behind it breaks up the smaller eddies that survive and evens out the velocity across the whole cross-section, since faster-moving air meets more resistance passing through the mesh than slower air does.
+
+**Venturi effect.** Air is effectively incompressible at these speeds, so the same volume has to pass through every cross-section per second. Narrow the duct and the air has to speed up to keep up, the same principle behind a Venturi tube. That's what the contraction cone does: it shrinks the cross-section ahead of the test chamber, accelerating and smoothing the flow before it reaches the model.
+
+**Why a 5th-degree polynomial.** The contraction cone's wall profile (see [`contraction-cone-profile.png`](hardware/contraction-cone-profile.png)) is a quintic curve rather than a plain cone or a cubic, because a 5th-degree polynomial is the lowest degree that can satisfy six conditions at once: matching radius, slope, and curvature at both the inlet and the outlet. Matching slope keeps the wall tangent to the straight duct on each end with no kink. Matching curvature avoids a sudden change in the pressure gradient. Either discontinuity would trip the boundary layer into separating, adding turbulence right before the air reaches the test section.
+
+---
+
 ## Bill of materials
 
 ### 3D printed (PLA, see [`hardware/3d-printed-parts/`](hardware/3d-printed-parts))
