@@ -24,14 +24,14 @@ firmware/
 Air is pulled through the tunnel by the fan at the exit end:
 
 ```
+Mist injected here
+       ↓
 Honeycomb + screen inlet → Contraction cone → Test chamber → Diffuser → Fan
-                                                  ↑
-                                          Mist injected here
 ```
 
-- **Honeycomb inlet / screen inlet** straighten and smooth incoming air before it accelerates through the contraction cone.
+- **Honeycomb inlet / screen inlet** straighten and smooth incoming air, and the mist along with it, before it accelerates through the contraction cone. Mist enters here via the **manifold**, fed by an ultrasonic mist maker housed in the **mister enclosure**.
 - **Contraction cone** narrows the flow into the test chamber, increasing velocity and evening out the profile.
-- **Test chamber** is where models sit. A **top door** gives access without disassembling the tunnel. Mist is injected here (or just upstream of it) via the **manifold**, fed by an ultrasonic mist maker housed in the **mister enclosure**.
+- **Test chamber** is where models sit. A **top door** gives access without disassembling the tunnel.
 - **Diffuser** widens back out after the test chamber, recovering pressure before the fan.
 - The **fan**, mounted at the exit, pulls air through the whole stack and is the only powered/controlled component.
 
