@@ -25,6 +25,9 @@ api:
 ota:
   platform: esphome
 
+preferences:
+  flash_write_interval: 1s
+
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
