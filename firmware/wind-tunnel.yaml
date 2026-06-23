@@ -1,9 +1,8 @@
 substitutions:
-  # Test-section top speed at 100% duty: Noctua NF-R8 redux-1800's rated
-  # free-air flow (27.97 m3/h) divided by the test chamber's 89mm bore,
-  # via the continuity equation. Real airspeed will be lower once duct
-  # and mesh losses are accounted for.
-  max_speed_mph: "2.8"
+  # Knob 100% maps to this displayed mph. This is the simulated speed of
+  # the test object, not the tunnel's real (much slower) airspeed -- the
+  # same way a flight sim shows airspeed independent of actual moving air.
+  max_speed_mph: "250"
 
 esphome:
   name: wind-tunnel
