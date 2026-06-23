@@ -74,17 +74,10 @@ Honeycomb + screen inlet → Contraction cone → Test chamber → Diffuser → 
 |---|---|---|
 | VIEWE UEDX24240013-MD50E (ESP32-C3, round display + rotary encoder built in) | 1 | Fan controller |
 | Noctua NF-R8 redux-1800 PWM fan (4-pin, 80mm) | 1 | ~12V, well under 0.1A draw |
-| Ultrasonic mist maker module (fogger disc) | 1 | _fill in exact model/voltage used_ |
-| 12V DC power supply | 1 | _fill in rating — sized for fan + mist maker draw_ |
+| Ultrasonic mist maker module (fogger disc) | 1 | — |
+| 12V DC power supply | 1 | — |
 | USB 5V adapter | 1 | Powers the controller board |
 | Hookup wire, 22–24 AWG | — | Fan and ground wiring |
-
-### Fasteners / misc
-
-| Part | Qty | Notes |
-|---|---|---|
-| M3 screws | — | _fill in length_ — diffuser fan mount, enclosure assembly |
-| Fine mesh screen | 2 | For Screen Inlet / Screen Outlet mounts |
 
 ---
 
