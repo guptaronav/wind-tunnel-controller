@@ -43,3 +43,7 @@ After the completion of V1, I went in and polished the firmware to look more lik
 *3 days ago · 1h 13m 59s logged*
 
 I didn't change much, but debugged an issue with the mph knob display update where the float value wasn't displaying on the knob properly.
+
+---
+
+Source: https://stardance.hackclub.com/projects/10053
