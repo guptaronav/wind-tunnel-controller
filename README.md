@@ -190,6 +190,14 @@ V1 is built, assembled, and tested end to end — the mist maker produces visibl
 
 ---
 
+## V2 status
+
+V2 is in the design process and so far, I've redesigned the test section to be one piece, have an L-shaped plexiglass cover, be 150% larger, and allow for better airflow.
+
+<img width="873" height="590" alt="Screenshot 2026-07-01 at 2 41 39 PM" src="https://github.com/user-attachments/assets/474a0119-1fd8-426a-8c38-fa301faf0641" />
+
+---
+
 ## Notes
 
 - `secrets.yaml` is gitignored — never commit WiFi credentials
