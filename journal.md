@@ -1,4 +1,4 @@
-<img width="1600" height="896" alt="image" src="https://github.com/user-attachments/assets/649d71f0-358f-4716-b12f-756d1dd77421" /># Build Journal
+# Build Journal
 
 A running devlog of progress on the wind tunnel build, oldest to newest.
 
